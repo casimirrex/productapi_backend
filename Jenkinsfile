@@ -2,47 +2,36 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'your-dockerhub-username/your-angular-app'
+        BACKEND_DOCKER_IMAGE = 'your-dockerhub-username/your-spring-boot-app'
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Clone Backend Repository') {
             steps {
                 git 'https://github.com/casimirrex/productapi_backend.git'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Backend Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build(DOCKER_IMAGE)
+                    backendDockerImage = docker.build(BACKEND_DOCKER_IMAGE)
                 }
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Run Backend Docker Container') {
             steps {
                 script {
-                    dockerImage.run('-p 4200:80')
+                    backendDockerImage.run('-p 8081:8081')
                 }
             }
         }
 
-        stage('Wait for Container') {
+        stage('Wait for Backend Container') {
             steps {
                 script {
-                    sleep 30 // Wait for the container to be fully up and running
-                }
-            }
-        }
-
-        stage('Validate Page') {
-            steps {
-                script {
-                    def responseCode = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4200/product-form', returnStdout: true).trim()
-                    if (responseCode != '200') {
-                        error "Failed to access /product-form page. HTTP status code: ${responseCode}"
-                    }
+                    sleep 60 // Wait for the container to be fully up and running
                 }
             }
         }
@@ -51,10 +40,10 @@ pipeline {
     post {
         always {
             script {
-                def dockerIds = sh(script: "docker ps -a -q --filter ancestor=${DOCKER_IMAGE}", returnStdout: true).trim()
-                if (dockerIds) {
-                    sh "docker stop ${dockerIds}"
-                    sh "docker rm ${dockerIds}"
+                def backendDockerIds = sh(script: "docker ps -a -q --filter ancestor=${BACKEND_DOCKER_IMAGE}", returnStdout: true).trim()
+                if (backendDockerIds) {
+                    sh "docker stop ${backendDockerIds}"
+                    sh "docker rm ${backendDockerIds}"
                 }
             }
         }
