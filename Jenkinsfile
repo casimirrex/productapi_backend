@@ -2,13 +2,21 @@ pipeline {
     agent any
 
     environment {
-        BACKEND_DOCKER_IMAGE = 'casimirrex/productapi'
+        BACKEND_DOCKER_IMAGE = 'casimirrex/productapi_backend'
     }
 
     stages {
         stage('Clone Backend Repository') {
             steps {
                 git branch: 'main', url: 'https://github.com/casimirrex/productapi_backend.git'
+            }
+        }
+
+        stage('Build with Maven') {
+            steps {
+                script {
+                    sh 'mvn clean package'
+                }
             }
         }
 
@@ -32,6 +40,17 @@ pipeline {
             steps {
                 script {
                     sleep 60 // Wait for the container to be fully up and running
+                }
+            }
+        }
+
+        stage('Validate Backend API') {
+            steps {
+                script {
+                    def responseCode = sh(script: 'curl -o /dev/null -s -w "%{http_code}\n" http://localhost:8081/actuator/health', returnStdout: true).trim()
+                    if (responseCode != '200') {
+                        error "Failed to access backend API. HTTP status code: ${responseCode}"
+                    }
                 }
             }
         }
