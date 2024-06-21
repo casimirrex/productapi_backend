@@ -51,8 +51,11 @@ pipeline {
     post {
         always {
             script {
-                docker ps -a -q --filter ancestor=$DOCKER_IMAGE --format="{{.ID}}" | xargs -I {} docker stop {}
-                docker ps -a -q --filter ancestor=$DOCKER_IMAGE --format="{{.ID}}" | xargs -I {} docker rm {}
+                def dockerIds = sh(script: "docker ps -a -q --filter ancestor=${DOCKER_IMAGE}", returnStdout: true).trim()
+                if (dockerIds) {
+                    sh "docker stop ${dockerIds}"
+                    sh "docker rm ${dockerIds}"
+                }
             }
         }
     }
