@@ -3,6 +3,9 @@ pipeline {
 
     environment {
         BACKEND_DOCKER_IMAGE = 'casimirrex/productapi_backend'
+        BACKEND_PORT = '8081'
+        ACTUATOR_USERNAME = 'user' // default Spring Boot username
+        ACTUATOR_PASSWORD = 'generated-security-password' // replace with the actual password
     }
 
     stages {
@@ -31,7 +34,7 @@ pipeline {
         stage('Run Backend Docker Container') {
             steps {
                 script {
-                    backendDockerImage.run('-p 8081:8081')
+                    backendDockerImage.run("-d -p ${BACKEND_PORT}:${BACKEND_PORT}")
                 }
             }
         }
@@ -47,7 +50,7 @@ pipeline {
         stage('Validate Backend API') {
             steps {
                 script {
-                    def responseCode = sh(script: 'curl -o /dev/null -s -w "%{http_code}\n" http://localhost:8081/actuator/health', returnStdout: true).trim()
+                    def responseCode = sh(script: "curl -o /dev/null -s -w '%{http_code}' -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${BACKEND_PORT}/actuator/health", returnStdout: true).trim()
                     if (responseCode != '200') {
                         error "Failed to access backend API. HTTP status code: ${responseCode}"
                     }
