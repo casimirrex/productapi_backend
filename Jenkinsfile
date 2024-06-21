@@ -44,6 +44,16 @@ pipeline {
                 }
             }
         }
+
+        stage('Post Data to Backend') {
+            steps {
+                script {
+                    sh """
+                    curl -X POST -H "Origin: http://localhost:4200" -H "Content-Type: application/json" --verbose -d '{"name":"Product 1","description":"First product","price":10.99}' http://localhost:${BACKEND_PORT}/products
+                    """
+                }
+            }
+        }
     }
 
     post {
