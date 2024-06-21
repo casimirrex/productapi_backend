@@ -2,13 +2,13 @@ pipeline {
     agent any
 
     environment {
-        BACKEND_DOCKER_IMAGE = 'your-dockerhub-username/your-spring-boot-app'
+        BACKEND_DOCKER_IMAGE = 'casimirrex/productapi'
     }
 
     stages {
         stage('Clone Backend Repository') {
             steps {
-                git 'https://github.com/casimirrex/productapi_backend.git'
+                git branch: 'main', url: 'https://github.com/casimirrex/productapi_backend.git'
             }
         }
 
