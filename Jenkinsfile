@@ -24,7 +24,7 @@ pipeline {
         stage('Build Backend Docker Image') {
             steps {
                 script {
-                    backendDockerImage = docker.build(BACKEND_DOCKER_IMAGE)
+                    backendDockerImage = docker.build("${BACKEND_DOCKER_IMAGE}")
                 }
             }
         }
