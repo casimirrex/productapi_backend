@@ -4,6 +4,8 @@ pipeline {
     environment {
         BACKEND_DOCKER_IMAGE = 'casimirrex/productapi_backend'
         BACKEND_PORT = '8081'
+        DOCKER_CLIENT_TIMEOUT = '120'
+        COMPOSE_HTTP_TIMEOUT = '120'
     }
 
     stages {
@@ -21,10 +23,20 @@ pipeline {
             }
         }
 
+        stage('Docker Login') {
+            steps {
+                script {
+                    sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                }
+            }
+        }
+
         stage('Build Backend Docker Image') {
             steps {
                 script {
-                    backendDockerImage = docker.build("${BACKEND_DOCKER_IMAGE}")
+                    retry(3) {
+                        backendDockerImage = docker.build("${BACKEND_DOCKER_IMAGE}")
+                    }
                 }
             }
         }
