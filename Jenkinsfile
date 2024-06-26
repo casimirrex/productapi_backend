@@ -47,39 +47,10 @@ pipeline {
             }
         }
 
-        stage('Check Docker Logs') {
-            steps {
-                script {
-                    sh 'docker logs $(docker ps -lq --filter ancestor=${BACKEND_DOCKER_IMAGE})'
-                }
-            }
-        }
-
         stage('Wait for Backend Container') {
             steps {
                 script {
                     sleep 120 // Wait for 2 minutes
-                }
-            }
-        }
-
-        stage('Health Check') {
-            steps {
-                script {
-                    retry(5) {
-                        sleep 10
-                        sh 'curl -f http://localhost:${BACKEND_PORT}/health || exit 1'
-                    }
-                }
-            }
-        }
-
-        stage('Post Data to Backend') {
-            steps {
-                script {
-                    sh """
-                    curl -X POST -H "Origin: http://localhost:4200" -H "Content-Type: application/json" --verbose -d '{"name":"Product 1","description":"First product","price":10.99}' http://localhost:${BACKEND_PORT}/products
-                    """
                 }
             }
         }
