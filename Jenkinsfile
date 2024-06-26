@@ -24,9 +24,13 @@ pipeline {
         }
 
         stage('Docker Login') {
+            environment {
+                DOCKER_USERNAME = credentials('casimirrex@gmail.com') // Jenkins credential ID for Docker username
+                DOCKER_PASSWORD = credentials('Antonyba28$') // Jenkins credential ID for Docker password
+            }
             steps {
                 script {
-                    sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                    sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
                 }
             }
         }
@@ -44,7 +48,7 @@ pipeline {
         stage('Run Backend Docker Container') {
             steps {
                 script {
-                    backendDockerImage.run("-d -p ${BACKEND_PORT}:${BACKEND_PORT}")
+                    backendDockerImage.run("-d -p ${BACKEND_PORT}:8080") // Assuming your backend service runs on port 8080 inside the container
                 }
             }
         }
