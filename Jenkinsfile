@@ -25,8 +25,8 @@ pipeline {
 
         stage('Docker Login') {
             environment {
-                DOCKER_USERNAME = credentials('casimirrex@gmail.com') // Jenkins credential ID for Docker username
-                DOCKER_PASSWORD = credentials('Antonyba28$') // Jenkins credential ID for Docker password
+                DOCKER_USERNAME = credentials('docker-username') // Jenkins credential ID for Docker username
+                DOCKER_PASSWORD = credentials('docker-password') // Jenkins credential ID for Docker password
             }
             steps {
                 script {
