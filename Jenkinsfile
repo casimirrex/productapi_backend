@@ -4,14 +4,12 @@ pipeline {
     environment {
         BACKEND_DOCKER_IMAGE = 'casimirrex/productapi_backend'
         BACKEND_PORT = '8081'
-        DOCKER_CLIENT_TIMEOUT = '120'
-        COMPOSE_HTTP_TIMEOUT = '120'
     }
 
     stages {
         stage('Clone Backend Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/casimirrex/productapi_backend.git', credentialsId: 'springboot-users'
+                git branch: 'main', url: 'https://github.com/casimirrex/productapi_backend.git', credentialsId: 'springboot-user'
             }
         }
 
@@ -24,12 +22,8 @@ pipeline {
         }
 
         stage('Docker Login') {
-            environment {
-                DOCKER_USERNAME = credentials('docker-username') // Jenkins credential ID for Docker username
-                DOCKER_PASSWORD = credentials('docker-password') // Jenkins credential ID for Docker password
-            }
             steps {
-                script {
+                withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
                 }
             }
