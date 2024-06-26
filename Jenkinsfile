@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Clone Backend Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/casimirrex/productapi_backend.git', credentialsId: 'springboot-user'
+                git branch: 'main', url: 'https://github.com/casimirrex/productapi_backend.git', credentialsId: 'docker-credentials'
             }
         }
 
