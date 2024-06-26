@@ -4,6 +4,8 @@ pipeline {
     environment {
         BACKEND_DOCKER_IMAGE = 'casimirrex/productapi_backend'
         BACKEND_PORT = '8081'
+        DOCKER_USERNAME = 'casimirrex@gmail.com'
+        DOCKER_PASSWORD = 'Antonyba28$'
     }
 
     stages {
@@ -23,7 +25,7 @@ pipeline {
 
         stage('Docker Login') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                script {
                     sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
                 }
             }
