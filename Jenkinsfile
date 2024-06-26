@@ -55,16 +55,4 @@ pipeline {
             }
         }
     }
-
-    post {
-        always {
-            script {
-                def backendDockerIds = sh(script: "docker ps -a -q --filter ancestor=${BACKEND_DOCKER_IMAGE}", returnStdout: true).trim()
-                if (backendDockerIds) {
-                    sh "docker stop ${backendDockerIds}"
-                    sh "docker rm ${backendDockerIds}"
-                }
-            }
-        }
-    }
 }
