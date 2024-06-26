@@ -47,10 +47,29 @@ pipeline {
             }
         }
 
+        stage('Check Docker Logs') {
+            steps {
+                script {
+                    sh 'docker logs $(docker ps -lq --filter ancestor=${BACKEND_DOCKER_IMAGE})'
+                }
+            }
+        }
+
         stage('Wait for Backend Container') {
             steps {
                 script {
-                    sleep 60 // Wait for the container to be fully up and running
+                    sleep 120 // Wait for 2 minutes
+                }
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                script {
+                    retry(5) {
+                        sleep 10
+                        sh 'curl -f http://localhost:${BACKEND_PORT}/health || exit 1'
+                    }
                 }
             }
         }
