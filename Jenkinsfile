@@ -12,6 +12,7 @@ pipeline {
         stage('Clone Backend Repository') {
             steps {
                 git branch: 'main', url: 'https://github.com/casimirrex/productapi_backend.git'
+                credentialsId : springboot-users
             }
         }
 
