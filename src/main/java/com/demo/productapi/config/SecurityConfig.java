@@ -13,8 +13,9 @@ public class SecurityConfig {
         http
             .csrf().disable()
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/products/**").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/actuator/health").permitAll()  // Allow access to /actuator/health without authentication
+                .requestMatchers("/products/**").permitAll()      // Allow access to /products/** without authentication
+                .anyRequest().authenticated()                     // All other requests require authentication
             )
             .httpBasic();  // or formLogin(), depending on your authentication method
 
